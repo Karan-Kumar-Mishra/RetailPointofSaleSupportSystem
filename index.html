@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Sales & Cash Reconciliation System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row bg-primary text-white p-3 mb-4">
+            <div class="col-md-8">
+                <h1><i class="fas fa-cash-register me-2"></i>Daily Sales & Cash Reconciliation</h1>
+                <p class="mb-0">Retail Point-of-Sale Support System</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex justify-content-end align-items-center">
+                    <span class="me-3">Store: <strong id="store-name">Main Store</strong></span>
+                    <span id="current-date"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="data-entry-tab" data-bs-toggle="tab" data-bs-target="#data-entry" type="button" role="tab">
+                    <i class="fas fa-keyboard me-1"></i>Data Entry
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reconciliation-tab" data-bs-toggle="tab" data-bs-target="#reconciliation" type="button" role="tab">
+                    <i class="fas fa-calculator me-1"></i>Reconciliation
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="fas fa-chart-dashboard me-1"></i>Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                    <i class="fas fa-file-alt me-1"></i>Reports
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="mainTabContent">
+            <!-- Data Entry Tab -->
+            <div class="tab-pane fade show active" id="data-entry" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5><i class="fas fa-dollar-sign me-2"></i>Sales Data Entry</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="sales-form">
+                                    <div class="mb-3">
+                                        <label for="transaction-date" class="form-label">Transaction Date</label>
+                                        <input type="date" class="form-control" id="transaction-date" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="register-number" class="form-label">Register Number</label>
+                                        <select class="form-select" id="register-number" required>
+                                            <option value="">Select Register</option>
+                                            <option value="REG001">Register 1 (REG001)</option>
+                                            <option value="REG002">Register 2 (REG002)</option>
+                                            <option value="REG003">Register 3 (REG003)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="opening-cash" class="form-label">Opening Cash ($)</label>
+                                        <input type="number" class="form-control" id="opening-cash" step="0.01" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cash-sales" class="form-label">Cash Sales ($)</label>
+                                        <input type="number" class="form-control" id="cash-sales" step="0.01" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="card-sales" class="form-label">Card Sales ($)</label>
+                                        <input type="number" class="form-control" id="card-sales" step="0.01" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="returns-refunds" class="form-label">Returns & Refunds ($)</label>
+                                        <input type="number" class="form-control" id="returns-refunds" step="0.01">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cash-drops" class="form-label">Cash Drops ($)</label>
+                                        <input type="number" class="form-control" id="cash-drops" step="0.01">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="closing-cash" class="form-label">Closing Cash Count ($)</label>
+                                        <input type="number" class="form-control" id="closing-cash" step="0.01" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>Save Entry
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5><i class="fas fa-list me-2"></i>Recent Entries</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="recent-entries" class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Register</th>
+                                                <th>Total Sales</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-entries-body">
+                                            <!-- Recent entries will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header bg-warning text-dark">
+                                <h5><i class="fas fa-exclamation-triangle me-2"></i>Data Validation</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="validation-messages" class="alert-container">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Enter sales data above to see validation results.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reconciliation Tab -->
+            <div class="tab-pane fade" id="reconciliation" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5><i class="fas fa-balance-scale me-2"></i>Cash Reconciliation</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="reconciliation-results" class="reconciliation-grid">
+                                    <!-- Reconciliation results will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h5><i class="fas fa-cog me-2"></i>Reconciliation Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-success" id="run-reconciliation">
+                                        <i class="fas fa-play me-1"></i>Run Reconciliation
+                                    </button>
+                                    <button class="btn btn-warning" id="flag-discrepancies">
+                                        <i class="fas fa-flag me-1"></i>Flag Discrepancies
+                                    </button>
+                                    <button class="btn btn-info" id="send-report">
+                                        <i class="fas fa-envelope me-1"></i>Send Report
+                                    </button>
+                                    <button class="btn btn-outline-primary" id="export-data">
+                                        <i class="fas fa-download me-1"></i>Export Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header bg-light text-dark">
+                                <h6><i class="fas fa-info-circle me-2"></i>Reconciliation Status</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="reconciliation-status">
+                                    <div class="status-item">
+                                        <span class="badge bg-secondary">Pending</span>
+                                        <span class="ms-2">Ready to reconcile</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div class="tab-pane fade" id="dashboard" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card metric-card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>Total Sales Today</h6>
+                                        <h3 id="total-sales-today">$0.00</h3>
+                                    </div>
+                                    <i class="fas fa-dollar-sign fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card metric-card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>Cash Reconciled</h6>
+                                        <h3 id="cash-reconciled">$0.00</h3>
+                                    </div>
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card metric-card bg-warning text-dark">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>Discrepancies</h6>
+                                        <h3 id="discrepancies-count">0</h3>
+                                    </div>
+                                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card metric-card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>Registers Active</h6>
+                                        <h3 id="registers-active">3</h3>
+                                    </div>
+                                    <i class="fas fa-cash-register fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-line me-2"></i>Sales Trend (7 Days)</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="sales-chart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-pie me-2"></i>Payment Methods</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="payment-chart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-pane fade" id="reports" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-file-alt me-2"></i>Generated Reports</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="report-type" class="form-label">Report Type</label>
+                                        <select class="form-select" id="report-type">
+                                            <option value="daily">Daily Reconciliation</option>
+                                            <option value="weekly">Weekly Summary</option>
+                                            <option value="monthly">Monthly Overview</option>
+                                            <option value="discrepancies">Discrepancies Report</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="report-date-from" class="form-label">From Date</label>
+                                        <input type="date" class="form-control" id="report-date-from">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="report-date-to" class="form-label">To Date</label>
+                                        <input type="date" class="form-control" id="report-date-to">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">&nbsp;</label>
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary" id="generate-report">
+                                                <i class="fas fa-file-export me-1"></i>Generate Report
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="report-output" class="mt-4">
+                                    <!-- Generated reports will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar mt-4 p-2 bg-light border-top">
+            <div class="row">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>Last Updated: <span id="last-updated">Never</span>
+                    </small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small class="text-muted">
+                        <i class="fas fa-database me-1"></i>Auto-save: <span class="text-success">Enabled</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Notification Modal -->
+    <div class="modal fade" id="emailModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-envelope me-2"></i>Email Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="email-modal-body">
+                    <!-- Email content will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="send-email-btn">Send Email</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="reconciliation.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="email-service.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
